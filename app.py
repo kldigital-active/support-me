@@ -13,7 +13,7 @@ YOCO_SECRET_KEY = os.environ.get("YOCO_SECRET_KEY", "sk_live_PUT_YOUR_TEST_KEY_H
 
 # Where Yoco should send the customer back to after paying.
 # While running locally, this is just localhost. Update this when you deploy.
-BASE_URL = os.environ.get("BASE_URL", "http://localhost:5000")
+BASE_URL = os.environ.get("BASE_URL", "https://support-me-4ze4.onrender.com")
 
 YOCO_CHECKOUT_URL = "https://payments.yoco.com/api/checkouts"
 
