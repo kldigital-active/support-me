@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Support Me</title>
+<style>
+  :root {
+    --pink: #ff5fa2;
+    --pink-dark: #e6428c;
+    --bg: #fff0f6;
+    --text: #2b2b2b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, var(--bg), #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    padding: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    max-width: 420px;
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .image-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #ffd6e8, #ffb3d6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b8447a;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .content {
+    padding: 28px 24px 32px;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+
+  .serious-text {
+    font-size: 15px;
+    color: #8a8a8a;
+    margin: 0 0 22px;
+    font-style: italic;
+  }
+
+  .amount-row {
+    display: flex;
+    align-items: center;
+    background: #f7f7f9;
+    border-radius: 14px;
+    padding: 4px 4px 4px 16px;
+    margin-bottom: 16px;
+  }
+
+  .amount-row span {
+    font-size: 18px;
+    font-weight: 600;
+    color: #888;
+  }
+
+  .amount-row input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding: 14px 8px;
+    outline: none;
+    color: var(--text);
+    min-width: 0;
+  }
+
+  button.pay-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--pink);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button.pay-btn:hover { background: var(--pink-dark); }
+  button.pay-btn:active { transform: scale(0.98); }
+  button.pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .error-msg {
+    color: #d23b3b;
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 16px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="image-wrap">
+      <img src="/static/photo.jpg" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
+    </div>
+
+    <div class="content">
+      <h1>Hey 👋</h1>
+      <p class="serious-text">if you're serious, you already know what to do</p>
+
+      <div class="amount-row">
+        <span>R</span>
+        <input type="number" id="amount" placeholder="Enter amount" min="2" step="1" />
+      </div>
+
+      <button class="pay-btn" id="payBtn">Pay</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+  </div>
+
+  <script>
+    const payBtn = document.getElementById("payBtn");
+    const amountInput = document.getElementById("amount");
+    const errorMsg = document.getElementById("errorMsg");
+
+    payBtn.addEventListener("click", async () => {
+      errorMsg.textContent = "";
+      const amount = amountInput.value;
+
+      if (!amount || Number(amount) < 2) {
+        errorMsg.textContent = "Minimum amount is R2.";
+        return;
+      }
+
+      payBtn.disabled = true;
+      payBtn.textContent = "Loading...";
+
+      try {
+        const res = await fetch("/create-checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error || "Something went wrong.";
+          payBtn.disabled = false;
+          payBtn.textContent = "Pay";
+          return;
+        }
+
+        // Send the customer to Yoco's secure hosted checkout page
+        window.location.href = data.redirectUrl;
+
+      } catch (err) {
+        errorMsg.textContent = "Network error. Try again.";
+        payBtn.disabled = false;
+        payBtn.textContent = "Pay";
+      }
+    });
+  </script>
+
+</body>
+</html>
