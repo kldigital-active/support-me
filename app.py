@@ -9,7 +9,7 @@ app = Flask(__name__)
 # -----------------------------------------------------------------------
 # Put your Yoco SECRET key here (test key while developing, e.g. starts with sk_test_...)
 # Get it from: Yoco Business Portal > Settings > Online Payments / Checkout API > API Keys
-YOCO_SECRET_KEY = os.environ.get("YOCO_SECRET_KEY", "sk_test_9ae909e7oLMqoWv50154a1f8adbc")
+YOCO_SECRET_KEY = os.environ.get("YOCO_SECRET_KEY", "sk_test_PUT_YOUR_TEST_KEY_HERE")
 
 # Where Yoco should send the customer back to after paying.
 # While running locally, this is just localhost. Update this when you deploy.
@@ -93,4 +93,6 @@ def success():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+    app.run(debug=debug_mode, host="0.0.0.0", port=port)
